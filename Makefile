@@ -3,3 +3,6 @@ clean:
 
 build: clean
 	go build -o ./bin ./...
+
+develop:
+	go run ./cmd/paperplane
