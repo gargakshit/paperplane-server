@@ -2,9 +2,10 @@ package model
 
 // Config is the base config structure for the server
 type Config struct {
-	TCPConfig     TCPConfig
-	HTTPConfig    HTTPConfig
-	ClusterConfig ClusterConfig `json:"config"`
+	TCPConfig      TCPConfig
+	HTTPConfig     HTTPConfig
+	DatabaseConfig DatabaseConfig
+	ClusterConfig  ClusterConfig `json:"config"`
 }
 
 // TCPConfig contains the config related to the TCP chat server
@@ -17,6 +18,17 @@ type TCPConfig struct {
 type HTTPConfig struct {
 	Port          int
 	ListenAddress string
+}
+
+// DatabaseConfig contains the config for the databases(s) which the application requires
+type DatabaseConfig struct {
+	RethinkDBConfig RethinkDBConfig
+}
+
+// RethinkDBConfig contains the config for RethinkDB
+type RethinkDBConfig struct {
+	Address  string
+	Database string
 }
 
 // ClusterConfig contains the config for the cluster, also available to the clients via HTTP
@@ -48,6 +60,12 @@ func (c *Config) SetDefaults() {
 	// By default, the HTTP server listens on 127.0.0.1
 	c.HTTPConfig.Port = 3000
 	c.HTTPConfig.ListenAddress = "127.0.0.1"
+
+	// Set the Database Config
+
+	// Set the RethinkDB config
+	c.DatabaseConfig.RethinkDBConfig.Address = "127.0.0.1:28015"
+	c.DatabaseConfig.RethinkDBConfig.Database = "paperplane"
 
 	// Set the Cluster Config
 

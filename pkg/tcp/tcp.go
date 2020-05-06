@@ -1,7 +1,6 @@
 package tcp
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"sync"
@@ -14,10 +13,9 @@ func BootstrapTCP(listenAddress string, wg *sync.WaitGroup) {
 	server, err := net.Listen("tcp", listenAddress)
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalln(err.Error())
 	} else {
 		log.Println("TCP server is listening at", listenAddress)
-		fmt.Println()
 	}
 
 	defer server.Close()
