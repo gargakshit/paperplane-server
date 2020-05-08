@@ -10,3 +10,7 @@ bin/*
 
 # Backup Files
 **/*.bak
+
+# Environment files
+.env*
+!.env.sample

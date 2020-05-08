@@ -8,18 +8,27 @@ import (
 
 	"github.com/gargakshit/paperplane-server/config"
 	"github.com/gargakshit/paperplane-server/database"
+	"github.com/gargakshit/paperplane-server/mailer"
 	"github.com/gargakshit/paperplane-server/pkg/http"
 	"github.com/gargakshit/paperplane-server/pkg/tcp"
 	"github.com/gargakshit/paperplane-server/utils"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	log.Println("Loading the config files...")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	log.Println("Config files loaded")
+
 	log.Println("Starting the server...")
 
-	config := config.GetDefaultConfig()
+	cfg := config.GetDefaultConfig()
 
-	httpAddress := fmt.Sprintf("%s:%d", config.HTTPConfig.ListenAddress, config.HTTPConfig.Port)
-	tcpAddress := fmt.Sprintf("%s:%d", config.TCPConfig.ListenAddress, config.TCPConfig.Port)
+	httpAddress := fmt.Sprintf("%s:%d", cfg.HTTPConfig.ListenAddress, cfg.HTTPConfig.Port)
+	tcpAddress := fmt.Sprintf("%s:%d", cfg.TCPConfig.ListenAddress, cfg.TCPConfig.Port)
 
 	log.Println("Compiling the RegExp(s)")
 	base64RegEx, err := regexp.Compile(`^(?:[A-Za-z0-9+\/]{2}[A-Za-z0-9+\/]{2})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$`)
@@ -29,11 +38,15 @@ func main() {
 	utils.Base64Regex = base64RegEx
 	log.Println("RegExp(s) compiled")
 
-	log.Println("Trying to connect to RethinkDB at", config.DatabaseConfig.RethinkDBConfig.Address)
+	log.Println("Trying to connect to RethinkDB at", cfg.DatabaseConfig.RethinkDBConfig.Address)
 	database.ConnectToRethink(
-		config.DatabaseConfig.RethinkDBConfig.Address,
-		config.DatabaseConfig.RethinkDBConfig.Database,
+		cfg.DatabaseConfig.RethinkDBConfig.Address,
+		cfg.DatabaseConfig.RethinkDBConfig.Database,
 	)
+
+	log.Println("Trying to connect to the mailer server")
+	mailer.ConnectToSMTP()
+	log.Println("Connected to the mail server!")
 
 	var wg sync.WaitGroup
 
