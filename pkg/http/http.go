@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/gargakshit/paperplane-server/pkg/http/handlers"
+	"github.com/gargakshit/paperplane-server/pkg/http/handlers/directory"
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/recover"
 )
@@ -24,11 +25,10 @@ func BootstrapHTTP(listenAddress string, wg *sync.WaitGroup) {
 		},
 	}))
 
-	httpServer.Get("/", func(ctx *fiber.Ctx) {
-		ctx.Send("Hello")
-	})
+	httpServer.Get("/config", handlers.ClusterConfigHandler)
 
-	httpServer.Post("/register", handlers.RegisterHandler)
+	directoryGroup := httpServer.Group("/directory")
+	directoryGroup.Post("/register", directory.RegisterHandler)
 
 	log.Fatalln(httpServer.Listen(listenAddress))
 }

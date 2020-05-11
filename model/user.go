@@ -13,8 +13,6 @@ type RegistrationResponse struct {
 
 // UserDataType is the model for rethinkdb directory table
 type UserDataType struct {
-	PubKey  string `rethinkdb:"public_key"`
-	ID      string `rethinkdb:"id"`
-	Email   string `rethinkdb:"email"`
-	PhoneNo string `rethinkdb:"phone_no"`
+	PubKey string `rethinkdb:"public_key"`
+	ID     string `rethinkdb:"id"`
 }

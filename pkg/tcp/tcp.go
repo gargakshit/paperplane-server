@@ -20,7 +20,13 @@ func BootstrapTCP(listenAddress string, wg *sync.WaitGroup) {
 		log.Println("TCP server is listening at", listenAddress)
 	}
 
-	defer server.Close()
+	defer func() {
+		err = server.Close()
+
+		if err != nil {
+			log.Println("Error shutting down the http server, forcing\n", err)
+		}
+	}()
 
 	for {
 		conn, err := server.Accept()

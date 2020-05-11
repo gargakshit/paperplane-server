@@ -26,6 +26,7 @@ func main() {
 	log.Println("Starting the server...")
 
 	cfg := config.GetDefaultConfig()
+	config.GlobalConfig = &cfg
 
 	httpAddress := fmt.Sprintf("%s:%d", cfg.HTTPConfig.ListenAddress, cfg.HTTPConfig.Port)
 	tcpAddress := fmt.Sprintf("%s:%d", cfg.TCPConfig.ListenAddress, cfg.TCPConfig.Port)

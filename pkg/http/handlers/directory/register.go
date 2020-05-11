@@ -1,4 +1,4 @@
-package handlers
+package directory
 
 import (
 	"log"
@@ -40,10 +40,8 @@ func RegisterHandler(ctx *fiber.Ctx) {
 
 				if res.IsNil() {
 					err = r.Table("directory").Insert(model.UserDataType{
-						ID:      id,
-						PubKey:  body.PubKey,
-						Email:   "",
-						PhoneNo: "",
+						ID:     id,
+						PubKey: body.PubKey,
 					}).Exec(database.RethinkSession)
 
 					if err != nil {
