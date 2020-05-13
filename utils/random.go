@@ -9,6 +9,7 @@ import (
 )
 
 const idSource = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+const fileIDSource = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
 // GetRandomNumber generates a cryptographically secure number between 0 and the specified number
 func GetRandomNumber(max int) int {
@@ -23,6 +24,17 @@ func GenerateRandomID() string {
 
 	for i := range b {
 		b[i] = idSource[GetRandomNumber(len(idSource))]
+	}
+
+	return string(b)
+}
+
+// GenerateFileID generates a truely random file ID for a file upload
+func GenerateFileID() string {
+	b := make([]byte, 32)
+
+	for i := range b {
+		b[i] = idSource[GetRandomNumber(len(fileIDSource))]
 	}
 
 	return string(b)

@@ -1,8 +1,12 @@
 package directory
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gargakshit/paperplane-server/database"
 	"github.com/gargakshit/paperplane-server/model"
 	"github.com/gargakshit/paperplane-server/utils"
@@ -49,9 +53,23 @@ func RegisterHandler(ctx *fiber.Ctx) {
 
 						ctx.Status(500).Send("Internal Server Error")
 					} else {
+						token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+							Audience:  fmt.Sprintf("reg--%s", id),
+							ExpiresAt: time.Now().UTC().Add(time.Minute * 15).Unix(),
+						})
+
+						tokenString, err := token.SignedString([]byte(os.Getenv("JWT_KEY")))
+
+						if err != nil {
+							log.Println("JWT Error:", err.Error())
+
+							ctx.Status(500).Send("Internal Server Error")
+						}
+
 						ctx.JSON(&model.RegistrationResponse{
 							PubKey: body.PubKey,
 							ID:     id,
+							Token:  tokenString,
 						})
 					}
 				} else {

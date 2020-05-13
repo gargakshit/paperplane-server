@@ -9,6 +9,7 @@ type RegistrationBody struct {
 type RegistrationResponse struct {
 	PubKey string `json:"public_key"`
 	ID     string `json:"id"`
+	Token  string `json:"token"`
 }
 
 // UserDataType is the model for rethinkdb directory table

@@ -3,6 +3,7 @@ module github.com/gargakshit/paperplane-server
 go 1.13
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/emersion/go-sasl v0.0.0-20200509203442-7bfe0ed36a21
 	github.com/gofiber/fiber v1.9.6
 	github.com/gofiber/recover v0.0.4
