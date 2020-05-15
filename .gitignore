@@ -2,8 +2,8 @@
 *.tmp
 
 # Binary output
-bin/*
-!bin/.gitkeep
+bin*/**/*
+!bin*/.gitkeep
 
 # MacOS .DS_Store
 **/.DS_Store

@@ -58,7 +58,7 @@ func (c *Config) SetDefaults() {
 	// Set the HTTP Config
 	// Default HTTP port is 3000
 	// By default, the HTTP server listens on 127.0.0.1
-	c.HTTPConfig.Port = 3000
+	c.HTTPConfig.Port = 3005
 	c.HTTPConfig.ListenAddress = "127.0.0.1"
 
 	// Set the Database Config
