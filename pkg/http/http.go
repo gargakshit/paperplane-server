@@ -17,6 +17,7 @@ func BootstrapHTTP(listenAddress string, wg *sync.WaitGroup) {
 
 	httpServer := fiber.New(&fiber.Settings{
 		ServerHeader: "paperplane-v2",
+		BodyLimit:    1024 * 1024 * 65, // 65 mb
 	})
 
 	httpServer.Use(recover.New(recover.Config{
