@@ -32,6 +32,7 @@ func BootstrapHTTP(listenAddress string, wg *sync.WaitGroup) {
 
 	directoryGroup := httpServer.Group("/directory")
 	directoryGroup.Post("/register", directory.RegisterHandler)
+	directoryGroup.Get("/:id", directory.GetUserPublicKey)
 
 	mediaGroup := httpServer.Group("/media")
 	mediaGroup.Post("/upload", media.UploadFile)

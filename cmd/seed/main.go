@@ -20,7 +20,7 @@ func main() {
 	log.Println("Creating the Database")
 	err := r.DBCreate(cgf.DatabaseConfig.RethinkDBConfig.Database).Exec(database.RethinkSession)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err.Error())
 	}
 	log.Println("Done!")
 
@@ -29,13 +29,17 @@ func main() {
 		PrimaryKey: "public_key",
 	}).Exec(database.RethinkSession)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err.Error())
 	}
 	err = r.TableCreate("mq", r.TableCreateOpts{
 		PrimaryKey: "public_key",
 	}).Exec(database.RethinkSession)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err.Error())
 	}
+
+	log.Println("Creating the indexes")
+	r.Table("directory").IndexCreate("id").Run(database.RethinkSession)
+
 	log.Println("Done!")
 }
