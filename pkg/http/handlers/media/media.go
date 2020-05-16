@@ -21,12 +21,12 @@ func UploadFile(c *fiber.Ctx) {
 		file, err := c.FormFile("file")
 
 		if err == nil {
-			c.SaveFile(file, fmt.Sprintf("./uploads/%s", utils.GenerateFileID()))
+			id := utils.GenerateFileID()
+			c.SaveFile(file, fmt.Sprintf("./uploads/%s", id))
+			c.Send(id)
 		} else {
 			c.Status(500).Send("Internal Server Error")
 		}
-
-		c.Send("OK")
 	} else {
 		c.Status(401).Send("Unauthorized")
 	}
