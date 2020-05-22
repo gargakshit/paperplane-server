@@ -8,7 +8,6 @@ import (
 
 	"github.com/gargakshit/paperplane-server/config"
 	"github.com/gargakshit/paperplane-server/database"
-	"github.com/gargakshit/paperplane-server/mailer"
 	"github.com/gargakshit/paperplane-server/pkg/http"
 	"github.com/gargakshit/paperplane-server/pkg/tcp"
 	"github.com/gargakshit/paperplane-server/utils"
@@ -44,10 +43,6 @@ func main() {
 		cfg.DatabaseConfig.RethinkDBConfig.Address,
 		cfg.DatabaseConfig.RethinkDBConfig.Database,
 	)
-
-	log.Println("Trying to connect to the mailer server")
-	mailer.ConnectToSMTP()
-	log.Println("Connected to the mail server!")
 
 	var wg sync.WaitGroup
 
