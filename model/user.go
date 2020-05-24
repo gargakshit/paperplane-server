@@ -7,9 +7,10 @@ type RegistrationBody struct {
 
 // RegistrationResponse contains the response for the /register endpoint
 type RegistrationResponse struct {
-	PubKey string `json:"public_key"`
-	ID     string `json:"id"`
-	Token  string `json:"token"`
+	PubKey       string `json:"public_key"`
+	ID           string `json:"id"`
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 // UserDataType is the model for rethinkdb directory table

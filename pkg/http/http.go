@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/gargakshit/paperplane-server/pkg/http/handlers"
+	"github.com/gargakshit/paperplane-server/pkg/http/handlers/auth"
 	"github.com/gargakshit/paperplane-server/pkg/http/handlers/directory"
 	"github.com/gargakshit/paperplane-server/pkg/http/handlers/media"
 	"github.com/gofiber/fiber"
@@ -29,6 +30,9 @@ func BootstrapHTTP(listenAddress string, wg *sync.WaitGroup) {
 	}))
 
 	httpServer.Get("/config", handlers.ClusterConfigHandler)
+
+	authGroup := httpServer.Group("/auth")
+	authGroup.Post("/refresh", auth.RefreshToken)
 
 	directoryGroup := httpServer.Group("/directory")
 	directoryGroup.Post("/register", directory.RegisterHandler)

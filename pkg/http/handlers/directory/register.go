@@ -1,7 +1,6 @@
 package directory
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -54,7 +53,7 @@ func RegisterHandler(ctx *fiber.Ctx) {
 						ctx.Status(500).Send("Internal Server Error")
 					} else {
 						token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-							Audience:  fmt.Sprintf("reg--%s", id),
+							Audience:  id,
 							ExpiresAt: time.Now().UTC().Add(time.Minute * 15).Unix(),
 						})
 
@@ -64,12 +63,30 @@ func RegisterHandler(ctx *fiber.Ctx) {
 							log.Println("JWT Error:", err.Error())
 
 							ctx.Status(500).Send("Internal Server Error")
+
+							return
+						}
+
+						refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+							Audience: id,
+							Subject:  "Refresh",
+						})
+
+						refreshTokenString, err := refreshToken.SignedString([]byte(os.Getenv("JWT_KEY")))
+
+						if err != nil {
+							log.Println("JWT Error:", err.Error())
+
+							ctx.Status(500).Send("Internal Server Error")
+
+							return
 						}
 
 						ctx.JSON(&model.RegistrationResponse{
-							PubKey: body.PubKey,
-							ID:     id,
-							Token:  tokenString,
+							PubKey:       body.PubKey,
+							ID:           id,
+							Token:        tokenString,
+							RefreshToken: refreshTokenString,
 						})
 					}
 				} else {
