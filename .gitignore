@@ -21,3 +21,7 @@ bin*/**/*
 # Uploads
 uploads/*
 !uploads/.gitkeep
+
+# Server Keys
+keys/*
+!keys/.gitkeep

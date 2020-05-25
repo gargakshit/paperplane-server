@@ -1,6 +1,7 @@
 clean:
-	rm -rf bin/pap*
+	rm -rf bin/paperplane
 	rm -rf bin/seed
+	rm -rf bin/genkeys
 
 build: clean
 	go build -o ./bin ./...
@@ -15,6 +16,9 @@ run:
 	./bin/paperplane
 
 run-build: build run
+
+genkeys:
+	go run ./cmd/genkeys
 
 cc-linux:
 	GOOS=linux GOARCH=amd64 go build -o ./bin-linux ./...
