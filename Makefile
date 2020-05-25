@@ -20,5 +20,10 @@ run-build: build run
 genkeys:
 	go run ./cmd/genkeys
 
+cleankeys:
+	rm -rf keys
+	mkdir keys
+	touch keys/.gitignore
+
 cc-linux:
 	GOOS=linux GOARCH=amd64 go build -o ./bin-linux ./...
