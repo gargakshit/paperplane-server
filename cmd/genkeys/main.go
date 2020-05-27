@@ -12,8 +12,8 @@ import (
 func main() {
 	_, errPriv := os.Stat("./keys/server_key_private")
 	_, errPub := os.Stat("./keys/server_key_public")
-	_, errPrivBase := os.Stat("./keys/server_key_private_base")
-	_, errPubBase := os.Stat("./keys/server_key_public_base")
+	_, errPrivBase := os.Stat("./keys/server_key_private_base64")
+	_, errPubBase := os.Stat("./keys/server_key_public_base64")
 
 	if os.IsNotExist(errPriv) || os.IsNotExist(errPub) || os.IsNotExist(errPrivBase) || os.IsNotExist(errPubBase) {
 		log.Println("Generating keys for the server...")

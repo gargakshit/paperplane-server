@@ -30,6 +30,7 @@ func BootstrapHTTP(listenAddress string, wg *sync.WaitGroup) {
 	}))
 
 	httpServer.Get("/config", handlers.ClusterConfigHandler)
+	httpServer.Get("/keys", handlers.KeysHandler)
 
 	authGroup := httpServer.Group("/auth")
 	authGroup.Post("/refresh", auth.RefreshToken)
