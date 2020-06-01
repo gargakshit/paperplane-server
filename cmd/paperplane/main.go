@@ -52,6 +52,9 @@ func main() {
 			cfg.DatabaseConfig.RethinkDBConfig.Database,
 		)
 
+		log.Println("Trying to connect to MongoDB at", cfg.DatabaseConfig.MongoDBConfig.URI)
+		database.ConnectToMongo(cfg.DatabaseConfig.MongoDBConfig.URI)
+
 		var wg sync.WaitGroup
 
 		wg.Add(1)

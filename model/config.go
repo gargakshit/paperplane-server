@@ -23,12 +23,18 @@ type HTTPConfig struct {
 // DatabaseConfig contains the config for the databases(s) which the application requires
 type DatabaseConfig struct {
 	RethinkDBConfig RethinkDBConfig
+	MongoDBConfig   MongoDBConfig
 }
 
 // RethinkDBConfig contains the config for RethinkDB
 type RethinkDBConfig struct {
 	Address  string
 	Database string
+}
+
+// MongoDBConfig contains the config for MongoDB
+type MongoDBConfig struct {
+	URI string
 }
 
 // ClusterConfig contains the config for the cluster, also available to the clients via HTTP
@@ -66,6 +72,9 @@ func (c *Config) SetDefaults() {
 	// Set the RethinkDB config
 	c.DatabaseConfig.RethinkDBConfig.Address = "127.0.0.1:28015"
 	c.DatabaseConfig.RethinkDBConfig.Database = "paperplane"
+
+	// Set the MongoDB config
+	c.DatabaseConfig.MongoDBConfig.URI = "mongodb://127.0.0.1/paperplane"
 
 	// Set the Cluster Config
 
