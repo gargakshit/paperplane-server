@@ -1,28 +1,32 @@
 package database
 
 import (
+	"context"
 	"log"
 
-	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
-	// RethinkSession is the global session of rethinkdb
-	RethinkSession *r.Session
+	// MongoConnection is the global connection of mongodb
+	MongoConnection *mongo.Client
 )
 
-// ConnectToRethink connects to the rethinkdb server
-func ConnectToRethink(rethinkAddress string, database string) {
-	session, err := r.Connect(r.ConnectOpts{
-		Address:  rethinkAddress,
-		Database: database,
-	})
+// ConnectToMongo connects to the mongodb server
+func ConnectToMongo(uri string) {
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 
 	if err != nil {
 		log.Fatalln(err.Error())
 	} else {
-		log.Println("Connected to RethinkDB")
+		log.Println("Connected to MongoDB")
 	}
 
-	RethinkSession = session
+	MongoConnection = client
+}
+
+// DisconnectMongo disconnects from the mongodb server
+func DisconnectMongo() {
+	MongoConnection.Disconnect(context.TODO())
 }

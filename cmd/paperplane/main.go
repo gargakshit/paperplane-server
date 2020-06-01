@@ -46,11 +46,16 @@ func main() {
 		utils.Base64Regex = base64RegEx
 		log.Println("RegExp(s) compiled")
 
-		log.Println("Trying to connect to RethinkDB at", cfg.DatabaseConfig.RethinkDBConfig.Address)
-		database.ConnectToRethink(
-			cfg.DatabaseConfig.RethinkDBConfig.Address,
-			cfg.DatabaseConfig.RethinkDBConfig.Database,
-		)
+		// log.Println("Trying to connect to RethinkDB at", cfg.DatabaseConfig.RethinkDBConfig.Address)
+		// database.ConnectToRethink(
+		// 	cfg.DatabaseConfig.RethinkDBConfig.Address,
+		// 	cfg.DatabaseConfig.RethinkDBConfig.Database,
+		// )
+
+		defer database.DisconnectMongo()
+
+		log.Println("Trying to connect to MongoDB at", cfg.DatabaseConfig.MongoDBConfig.URI)
+		database.ConnectToMongo(cfg.DatabaseConfig.MongoDBConfig.URI)
 
 		var wg sync.WaitGroup
 
