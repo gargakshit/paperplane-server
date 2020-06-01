@@ -5,6 +5,7 @@ type Config struct {
 	TCPConfig      TCPConfig
 	HTTPConfig     HTTPConfig
 	DatabaseConfig DatabaseConfig
+	MQConfig       MQConfig
 	ClusterConfig  ClusterConfig `json:"config"`
 }
 
@@ -27,6 +28,11 @@ type DatabaseConfig struct {
 
 // MongoDBConfig contains the config for MongoDB
 type MongoDBConfig struct {
+	URI string
+}
+
+// MQConfig contains the config for the rabbitmq instance
+type MQConfig struct {
 	URI string
 }
 
@@ -63,7 +69,12 @@ func (c *Config) SetDefaults() {
 	// Set the Database Config
 
 	// Set the MongoDB config
+	// By default, connect to the localhost instance of mongodb
 	c.DatabaseConfig.MongoDBConfig.URI = "mongodb://127.0.0.1/"
+
+	// Set the MQ Config
+	// By default, connect to the rabbit instance on localhost
+	c.MQConfig.URI = "amqp://127.0.0.1:5672"
 
 	// Set the Cluster Config
 

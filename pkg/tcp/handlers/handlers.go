@@ -27,9 +27,11 @@ func HandleTCPClient(conn net.Conn) {
 
 	log.Println(serverBase64PrivKey, serverBase64PubKey)
 
-	conn.Write(serverPubKey[:])
+	conn.Write([]byte(serverBase64PubKey))
 
-	var buff []byte
+	sharedEmphKeys := new([32]byte)
+
+	buffer := make([]byte, 131072) // 128kb
 
 	// stage is a variable used to store the state for the TCP handshake process
 	// 0 means the server has sent it's public key and is awaiting the client's public key
@@ -42,8 +44,28 @@ func HandleTCPClient(conn net.Conn) {
 	for {
 		switch stage {
 		case 0:
-			conn.Read(buff)
-			stage++
+			size, err := conn.Read(buffer)
+
+			if err == nil {
+				data := buffer[:size]
+
+				if utils.IsBase64Valid(string(data)) {
+					if peerKeyBytes, err := utils.FromBase64(string(data)); err != nil {
+						conn.Close()
+					} else {
+						peerKey := new([32]byte)
+						copy(peerKeyBytes[:], data[:32])
+
+						box.Precompute(sharedEmphKeys, peerKey, serverPrivKey)
+
+						stage++
+					}
+				} else {
+					conn.Close()
+				}
+			} else {
+				conn.Close()
+			}
 		default:
 			conn.Close()
 		}

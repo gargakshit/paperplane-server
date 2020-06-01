@@ -9,6 +9,7 @@ import (
 
 	"github.com/gargakshit/paperplane-server/config"
 	"github.com/gargakshit/paperplane-server/database"
+	"github.com/gargakshit/paperplane-server/mq"
 	"github.com/gargakshit/paperplane-server/pkg/http"
 	"github.com/gargakshit/paperplane-server/pkg/tcp"
 	"github.com/gargakshit/paperplane-server/utils"
@@ -46,16 +47,13 @@ func main() {
 		utils.Base64Regex = base64RegEx
 		log.Println("RegExp(s) compiled")
 
-		// log.Println("Trying to connect to RethinkDB at", cfg.DatabaseConfig.RethinkDBConfig.Address)
-		// database.ConnectToRethink(
-		// 	cfg.DatabaseConfig.RethinkDBConfig.Address,
-		// 	cfg.DatabaseConfig.RethinkDBConfig.Database,
-		// )
-
-		defer database.DisconnectMongo()
-
 		log.Println("Trying to connect to MongoDB at", cfg.DatabaseConfig.MongoDBConfig.URI)
 		database.ConnectToMongo(cfg.DatabaseConfig.MongoDBConfig.URI)
+		defer database.DisconnectMongo()
+
+		log.Println("Trying to connect to rabbit at", cfg.MQConfig.URI)
+		mq.ConnectToMQ(cfg.MQConfig.URI)
+		defer mq.CleanupMQ()
 
 		var wg sync.WaitGroup
 
@@ -68,7 +66,6 @@ func main() {
 		fmt.Println()
 
 		wg.Wait()
-
 	} else {
 		log.Fatalln("Server keys not found, please run \"make genkeys\"")
 	}
