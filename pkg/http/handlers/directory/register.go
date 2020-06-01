@@ -1,6 +1,7 @@
 package directory
 
 import (
+	"context"
 	"log"
 	"os"
 	"time"
@@ -10,7 +11,6 @@ import (
 	"github.com/gargakshit/paperplane-server/model"
 	"github.com/gargakshit/paperplane-server/utils"
 	"github.com/gofiber/fiber"
-	r "gopkg.in/rethinkdb/rethinkdb-go.v6"
 )
 
 // RegisterHandler is the HTTP handler for the /register endpoint
@@ -22,6 +22,8 @@ func RegisterHandler(ctx *fiber.Ctx) {
 		log.Panicln("HTTP Error:", err.Error())
 
 		ctx.Status(500).Send("Internal Server Error")
+	} else if body.PubKey == "" {
+		ctx.Status(400).Send("Bad Request")
 	} else {
 		if err != nil {
 			log.Println("HTTP Error:", err.Error())
@@ -31,21 +33,23 @@ func RegisterHandler(ctx *fiber.Ctx) {
 			if utils.IsBase64Valid(body.PubKey) {
 				id := utils.GenerateRandomID()
 
-				res, err := r.Table("directory").Get(body.PubKey).Run(database.RethinkSession)
-
-				defer res.Close()
-
 				if err != nil {
 					log.Println("DB Error:", err.Error())
 
 					ctx.Status(500).Send("Internal Server Error")
 				}
 
-				if res.IsNil() {
-					err = r.Table("directory").Insert(model.UserDataType{
+				directoryCollection := database.MongoConnection.Database("paperplane").Collection("directory")
+
+				var resultUser model.UserDataType
+
+				if err = directoryCollection.FindOne(context.TODO(), &model.UserDataType{
+					PubKey: body.PubKey,
+				}).Decode(&resultUser); err != nil {
+					_, err = directoryCollection.InsertOne(context.TODO(), &model.UserDataType{
 						ID:     id,
 						PubKey: body.PubKey,
-					}).Exec(database.RethinkSession)
+					})
 
 					if err != nil {
 						log.Println("DB Error:", err.Error())
@@ -90,7 +94,7 @@ func RegisterHandler(ctx *fiber.Ctx) {
 						})
 					}
 				} else {
-					ctx.Status(409).Send("Already Registered")
+					ctx.Status(409).Send("Aleady Registered")
 				}
 
 			} else {

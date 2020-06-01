@@ -9,5 +9,4 @@ require (
 	github.com/joho/godotenv v1.3.0
 	go.mongodb.org/mongo-driver v1.3.3
 	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
-	gopkg.in/rethinkdb/rethinkdb-go.v6 v6.2.1
 )
