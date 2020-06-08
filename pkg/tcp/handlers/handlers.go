@@ -1,11 +1,18 @@
 package handlers
 
 import (
+	"context"
 	"crypto/rand"
+	"io"
+	"io/ioutil"
 	"log"
 	"net"
+	"strings"
 
+	"github.com/gargakshit/paperplane-server/database"
+	"github.com/gargakshit/paperplane-server/model"
 	"github.com/gargakshit/paperplane-server/utils"
+	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/nacl/box"
 )
 
@@ -31,7 +38,7 @@ func HandleTCPClient(conn net.Conn) {
 
 	sharedEmphKeys := new([32]byte)
 
-	buffer := make([]byte, 131072) // 128kb
+	buffer := make([]byte, 64000) // 64kb
 
 	// stage is a variable used to store the state for the TCP handshake process
 	// 0 means the server has sent it's public key and is awaiting the client's public key
@@ -40,6 +47,9 @@ func HandleTCPClient(conn net.Conn) {
 	// Challange's response is also encrypted with the server's master key, so verifying it will also verify the server's identity
 	// 3 means the client has been verified and is ready to send / recieve messages over the encrypted channel
 	stage := 0
+	var id string
+
+	challangeUUID := uuid.NewV4()
 
 	for {
 		switch stage {
@@ -54,7 +64,7 @@ func HandleTCPClient(conn net.Conn) {
 						conn.Close()
 					} else {
 						peerKey := new([32]byte)
-						copy(peerKeyBytes[:], data[:32])
+						copy(peerKey[:], peerKeyBytes[:32])
 
 						box.Precompute(sharedEmphKeys, peerKey, serverPrivKey)
 
@@ -66,8 +76,62 @@ func HandleTCPClient(conn net.Conn) {
 			} else {
 				conn.Close()
 			}
+
+			break
+
+		case 1:
+			size, err := conn.Read(buffer)
+
+			if err == nil {
+				id = string(buffer[:size])
+
+				directoryCollection := database.MongoConnection.Database("paperplane").Collection("directory")
+
+				var resultUser model.UserDataType
+
+				if err := directoryCollection.FindOne(context.TODO(), &model.UserDataType{
+					ID: id,
+				}).Decode(&resultUser); err != nil {
+					conn.Close()
+				} else {
+					keyString, err := ioutil.ReadFile("./keys/server_key_private_base64")
+
+					if err != nil {
+						conn.Close()
+					} else {
+						_, err := utils.FromBase64(strings.TrimSpace(string(keyString)))
+
+						if err != nil {
+							conn.Close()
+						} else {
+							recPubKey, err := utils.FromBase64(resultUser.PubKey)
+
+							if err != nil {
+								conn.Close()
+							} else {
+								var nonce [24]byte
+								if _, err := io.ReadFull(rand.Reader, nonce[:]); err != nil {
+									conn.Close()
+								} else {
+									peerKey := new([32]byte)
+									copy(peerKey[:], recPubKey[:32])
+
+									encrypted := box.Seal(nonce[:], challangeUUID.Bytes(), &nonce, peerKey, serverPrivKey)
+									conn.Write(encrypted)
+								}
+							}
+						}
+					}
+				}
+			} else {
+				conn.Close()
+			}
+
+			break
+
 		default:
 			conn.Close()
+			break
 		}
 	}
 }
